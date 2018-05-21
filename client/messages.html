@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Messages</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ 
+    <style>
+    .message{
+    display:block;
+    margin:5px;
+    padding:20px;
+    border:1px solid grey
+    }
+    p{
+        display: block;
+    }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Resistance Network</a>
+            </div>
+            <ul class="nav navbar-nav pull-right">
+                <li><a onclick="logout()"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+               
+        <div class="row">
+            <div class="col-sm-12">
+                <a href="sendmessage.html" class="btn btn-primary pull-right">Send new message</a>
+                <h2>Recent Messages</h2>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-sm-8 col-sm-push-2">                
+                <div id="messages"  >
+                    <!-- <div class="message">
+                        <span class="pull-left">Commnder</span>
+                        <span class="pull-right">10:30</span>
+                        <br>
+                        <br>
+                        <p class="text-center" >This is the first test message
+                                *This is the first test messageThis is the 
+                        </p>
+                    </div> -->
+                 </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        if (localStorage.token === "null") {
+            window.location="http://127.0.0.1:5500/client/signup.html"           
+        }else{
+            $.ajax({
+              type: 'GET',
+              url: 'http://localhost:8000/messages/',
+              headers:{
+                'Authorization':'Token '+ localStorage.token
+              },
+              traditional: true,
+              crossDomain: true,
+              success: function(res){
+               var data=res;
+               if(data.length != 0){
+                 data.sort(function(a,b){
+                    return new Date(b.date) - new Date(a.date);
+                    });
+    
+                $.each(data,function(i){
+                    $('#messages').append(
+                    "<div class='message'>"+
+                    "<span class='pull-left'>"+data[i].sender+"</span>"+
+                    "<span class='pull-right'>"+data[i].date+"</span>"+
+                    "<br> <br>"+
+                    "<p class='text-center' >"+data[i].messageBody+"</p> "+
+                    "</div>"
+                );
+                })
+               }
+               else{
+                $('#messages').append(
+                    "<div class='message'>"+
+                    "<span class='pull-left'></span>"+
+                    "<span class='pull-right'></span>"+
+                    "<br> <br>"+
+                    "<p class='text-center' >No messages to show :(</p> "+
+                    "</div>");
+               }
+              },
+              error: function(err){
+                    window.location="http://127.0.0.1:5500/client/signup.html" 
+                
+                console.log(err.statusText);
+            }
+        });
+        }
+    });
+    function logout() {
+            localStorage.token = null;
+          window.location="http://127.0.0.1:5500/client/signup.html"  
+    }
+    </script>
+</body>
+</html>
